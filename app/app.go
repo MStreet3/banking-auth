@@ -43,7 +43,7 @@ func Start() {
 
 	/* setup routes to handle */
 	router.Path("/ping").HandlerFunc(pong).Methods(http.MethodGet)
-	router.Path("/login").HandlerFunc(authHandlers.login).Methods(http.MethodPost)
+	router.Path("/auth/login").HandlerFunc(authHandlers.login).Methods(http.MethodPost)
 
 	err := http.ListenAndServe(uri, router)
 
