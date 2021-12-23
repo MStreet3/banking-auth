@@ -2,9 +2,12 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/mstreet3/banking-auth/dto"
+	"github.com/mstreet3/banking-auth/logger"
 	"github.com/mstreet3/banking-auth/service"
 )
 
@@ -14,6 +17,29 @@ type AuthHandlers struct {
 
 func (h AuthHandlers) register(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, http.StatusNotImplemented, "Handler not implemented..")
+}
+
+func (h AuthHandlers) verify(w http.ResponseWriter, r *http.Request) {
+
+	/* fetch URL query params */
+	vars := mux.Vars(r)
+	token := vars["token"]
+
+	/* validate the query params */
+	if token == "" {
+		writeResponse(w, http.StatusBadRequest, "invalid access token")
+	}
+
+	/* attempt to parse JWT for claims */
+	claims, appErr := h.service.ParseClaims(token)
+	if appErr != nil {
+		writeResponse(w, appErr.Code, appErr.Error())
+		return
+	}
+
+	/* return response */
+	logger.Info(fmt.Sprintf("returning claims: %v", claims))
+	writeResponse(w, http.StatusOK, claims)
 }
 
 func (h AuthHandlers) login(w http.ResponseWriter, r *http.Request) {

@@ -30,9 +30,19 @@ func Start() {
 	}
 
 	/* setup routes to handle */
-	router.Path("/ping").HandlerFunc(pong).Methods(http.MethodGet)
-	router.Path("/auth/login").HandlerFunc(authHandlers.login).Methods(http.MethodPost)
-	router.Path("/auth/register").HandlerFunc(authHandlers.register).Methods(http.MethodPost)
+	router.Path("/ping").
+		HandlerFunc(pong).
+		Methods(http.MethodGet)
+	router.Path("/auth/login").
+		HandlerFunc(authHandlers.login).
+		Methods(http.MethodPost)
+	router.Path("/auth/verify").
+		HandlerFunc(authHandlers.verify).
+		Methods(http.MethodGet).
+		Queries("token", "{token}")
+	router.Path("/auth/register").
+		HandlerFunc(authHandlers.register).
+		Methods(http.MethodPost)
 
 	err := http.ListenAndServe(uri, router)
 
