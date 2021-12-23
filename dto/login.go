@@ -12,6 +12,7 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token,omitempty"`
 }
 
+/* validate the login request */
 func (req LoginRequest) Validate() *errs.AppError {
 	if req.Username == "" || req.Password == "" {
 		return errs.NewValidationError("username and password are required")

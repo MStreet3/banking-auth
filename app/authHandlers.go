@@ -17,6 +17,8 @@ func (h AuthHandlers) register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h AuthHandlers) login(w http.ResponseWriter, r *http.Request) {
+
+	/* attempt to deserialize the request */
 	var loginRequest dto.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
@@ -32,12 +34,14 @@ func (h AuthHandlers) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/* get access token */
+	/* attempt to get access token */
 	token, appErr := h.service.Login(loginRequest)
 	if appErr != nil {
 		writeResponse(w, appErr.Code, appErr.Error())
 		return
 	}
+
+	/* return response */
 	writeResponse(w, http.StatusOK, token)
 
 }
