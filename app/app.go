@@ -4,28 +4,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jmoiron/sqlx"
 	"github.com/mstreet3/banking-auth/domain"
 	"github.com/mstreet3/banking-auth/logger"
 	"github.com/mstreet3/banking-auth/service"
 )
 
+/* todo: move to environment variables */
 const appPort int64 = 9000
-
-func getDbClient() *sqlx.DB {
-	client, err := sqlx.Open("mysql", "root:codecamp@tcp(localhost:3306)/banking")
-	if err != nil {
-		panic(err)
-	}
-	// See "Important settings" section.
-	client.SetConnMaxLifetime(time.Minute * 3)
-	client.SetMaxOpenConns(10)
-	client.SetMaxIdleConns(10)
-	return client
-}
 
 func Start() {
 	/* todo: add middleware logging of requests and responses */
@@ -52,8 +39,4 @@ func Start() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func pong(w http.ResponseWriter, r *http.Request) {
-	writeResponse(w, http.StatusOK, "pong")
 }
