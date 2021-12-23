@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/golang-jwt/jwt"
 	"github.com/mstreet3/banking-auth/domain"
 	"github.com/mstreet3/banking-auth/dto"
 	"github.com/mstreet3/banking-auth/errs"
@@ -8,6 +9,7 @@ import (
 
 type AuthService interface {
 	Login(dto.LoginRequest) (*dto.LoginResponse, *errs.AppError)
+	ParseClaims(string) (*dto.ClaimsResponse, *errs.AppError)
 }
 
 type DefaultAuthService struct {
@@ -35,4 +37,18 @@ func (s DefaultAuthService) Login(req dto.LoginRequest) (*dto.LoginResponse, *er
 
 	/* return response */
 	return resp, nil
+}
+
+func (s DefaultAuthService) ParseClaims(ss string) (*dto.ClaimsResponse, *errs.AppError) {
+	token, err := jwt.ParseWithClaims(ss, &dto.ClaimsResponse{}, func(token *jwt.Token) (interface{}, error) {
+		return domain.MySigningKey, nil
+	})
+	if err != nil {
+		return nil, errs.NewAuthenticationError(err.Error())
+	}
+	if claims, ok := token.Claims.(*dto.ClaimsResponse); ok && token.Valid {
+		return claims, nil
+	}
+	return nil, errs.NewAuthenticationError("invalid access token")
+
 }

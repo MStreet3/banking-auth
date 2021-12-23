@@ -14,7 +14,7 @@ import (
 
 const TOKEN_EXPIRATION = time.Hour
 
-var mySigningKey = []byte("SECRET_KEY") // todo: get key from environment variable
+var MySigningKey = []byte("SECRET_KEY") // todo: get key from environment variable
 
 type AuthRole string
 
@@ -50,13 +50,13 @@ func (l Login) generateClaims() (*jwt.MapClaims, *errs.AppError) {
 	claims := jwt.MapClaims{
 		"username": l.Username,
 		"role":     l.Role,
-		"exp":      time.Now().Add(TOKEN_EXPIRATION).Unix(),
+		"expiry":   time.Now().Add(TOKEN_EXPIRATION).Unix(),
 	}
 
 	switch l.Role {
 	case CLIENT:
 		claims["accounts"] = strings.Split(l.Accounts.String, ",")
-		claims["customerId"] = l.CustomerId.String
+		claims["customer_id"] = l.CustomerId.String
 	default:
 		break
 	}
@@ -71,7 +71,7 @@ func (l Login) generateJwt() (*string, *errs.AppError) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	ss, signErr := token.SignedString(mySigningKey)
+	ss, signErr := token.SignedString(MySigningKey)
 	if signErr != nil {
 		return nil, errs.NewAuthenticationError(fmt.Sprintf("could not create jwt: %s", signErr.Error()))
 	}
