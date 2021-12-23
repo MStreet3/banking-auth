@@ -21,6 +21,13 @@ func NewInternalServerError(msg string) *AppError {
 	}
 }
 
+func NewAuthenticationError(msg string) *AppError {
+	return &AppError{
+		Code:    http.StatusUnauthorized,
+		Message: msg,
+	}
+}
+
 func UnexpectedDatabaseError() *AppError {
 	return NewInternalServerError("Unexpected database error")
 }
