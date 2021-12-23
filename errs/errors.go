@@ -7,6 +7,10 @@ type AppError struct {
 	Message string `json:"message"`
 }
 
+func (err AppError) Error() string {
+	return err.Message
+}
+
 func NewNotFoundError(msg string) *AppError {
 	return &AppError{
 		Code:    http.StatusNotFound,

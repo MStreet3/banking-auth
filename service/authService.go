@@ -19,5 +19,14 @@ func NewAuthService(repo domain.AuthRepository) AuthService {
 }
 
 func (s DefaultAuthService) Login(req dto.LoginRequest) (*dto.LoginResponse, *errs.AppError) {
-	return nil, errs.NewInternalServerError("login not implemented")
+	l, err := s.repo.FindBy(req.Username, req.Password)
+	if err != nil {
+		return nil, err
+	}
+	var resp *dto.LoginResponse
+	resp, err = l.ToDto()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }

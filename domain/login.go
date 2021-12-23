@@ -19,8 +19,8 @@ var mySigningKey = []byte("SECRET_KEY") // todo: get key from environment variab
 type AuthRole string
 
 const (
-	CLIENT AuthRole = "bank-client"
-	ADMIN  AuthRole = "bank-admin"
+	CLIENT AuthRole = "user"
+	ADMIN  AuthRole = "admin"
 )
 
 type Login struct {
@@ -57,7 +57,6 @@ func (l Login) generateClaims() (*jwt.MapClaims, *errs.AppError) {
 	case CLIENT:
 		claims["accounts"] = strings.Split(l.Accounts.String, ",")
 		claims["customerId"] = l.CustomerId.String
-		break
 	default:
 		break
 	}

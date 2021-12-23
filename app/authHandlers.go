@@ -24,10 +24,18 @@ func (h AuthHandlers) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	/* validate the request */
+	/* todo: move to middleware */
+	invalid := loginRequest.Validate()
+	if invalid != nil {
+		writeResponse(w, http.StatusBadRequest, invalid.Error())
+		return
+	}
+
 	/* get access token */
 	token, appErr := h.service.Login(loginRequest)
 	if appErr != nil {
-		writeResponse(w, appErr.Code, appErr.AsMessage())
+		writeResponse(w, appErr.Code, appErr.Error())
 		return
 	}
 	writeResponse(w, http.StatusOK, token)
