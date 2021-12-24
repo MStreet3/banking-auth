@@ -2,12 +2,10 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/mstreet3/banking-auth/dto"
-	"github.com/mstreet3/banking-auth/logger"
 	"github.com/mstreet3/banking-auth/service"
 )
 
@@ -38,7 +36,6 @@ func (h AuthHandlers) verify(w http.ResponseWriter, r *http.Request) {
 	}
 
 	/* return response */
-	logger.Info(fmt.Sprintf("returning claims: %v", claims))
 	writeResponse(w, http.StatusOK, claims)
 }
 
