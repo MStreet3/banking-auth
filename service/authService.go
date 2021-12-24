@@ -5,10 +5,12 @@ import (
 	"github.com/mstreet3/banking-auth/domain"
 	"github.com/mstreet3/banking-auth/dto"
 	"github.com/mstreet3/banking-auth/errs"
+	"github.com/mstreet3/banking-auth/transforms"
 )
 
 type AuthService interface {
 	Login(dto.LoginRequest) (*dto.LoginResponse, *errs.AppError)
+	Register(dto.RegisterUserRequest) (*dto.RegisterUserResponse, *errs.AppError)
 	ParseClaims(string) (*dto.ClaimsResponse, *errs.AppError)
 }
 
@@ -18,6 +20,23 @@ type DefaultAuthService struct {
 
 func NewAuthService(repo domain.AuthRepository) AuthService {
 	return DefaultAuthService{repo}
+}
+
+func (s DefaultAuthService) Register(req dto.RegisterUserRequest) (*dto.RegisterUserResponse, *errs.AppError) {
+
+	user := transforms.ToUser(req)
+
+	/* attempt to get credentials for user from data source */
+	u, err := s.repo.AddUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	/* attempt to transform credentials into a response */
+	resp := transforms.ToDto(*u)
+
+	/* return response */
+	return &resp, nil
 }
 
 func (s DefaultAuthService) Login(req dto.LoginRequest) (*dto.LoginResponse, *errs.AppError) {
