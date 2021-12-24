@@ -32,6 +32,10 @@ func NewAuthenticationError(msg string) *AppError {
 	}
 }
 
+func InvalidAccessTokenError() *AppError {
+	return NewAuthenticationError("invalid access token")
+}
+
 func UnexpectedDatabaseError() *AppError {
 	return NewInternalServerError("Unexpected database error")
 }

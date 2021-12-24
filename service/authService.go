@@ -21,7 +21,6 @@ func NewAuthService(repo domain.AuthRepository) AuthService {
 }
 
 func (s DefaultAuthService) Login(req dto.LoginRequest) (*dto.LoginResponse, *errs.AppError) {
-
 	/* attempt to get credentials for user from data source */
 	l, err := s.repo.FindBy(req.Username, req.Password)
 	if err != nil {
@@ -40,15 +39,20 @@ func (s DefaultAuthService) Login(req dto.LoginRequest) (*dto.LoginResponse, *er
 }
 
 func (s DefaultAuthService) ParseClaims(ss string) (*dto.ClaimsResponse, *errs.AppError) {
-	token, err := jwt.ParseWithClaims(ss, &dto.ClaimsResponse{}, func(token *jwt.Token) (interface{}, error) {
-		return domain.MySigningKey, nil
-	})
+	/* parse token */
+	token, err := jwt.ParseWithClaims(ss,
+		&dto.ClaimsResponse{},
+		func(token *jwt.Token) (interface{}, error) {
+			return domain.MySigningKey, nil
+		})
 	if err != nil {
 		return nil, errs.NewAuthenticationError(err.Error())
 	}
+
+	/* cast token and return */
 	if claims, ok := token.Claims.(*dto.ClaimsResponse); ok && token.Valid {
 		return claims, nil
 	}
-	return nil, errs.NewAuthenticationError("invalid access token")
+	return nil, errs.InvalidAccessTokenError()
 
 }

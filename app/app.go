@@ -29,10 +29,12 @@ func Start() {
 		service: authService,
 	}
 
-	/* setup routes to handle */
+	/* default health route */
 	router.Path("/ping").
 		HandlerFunc(pong).
 		Methods(http.MethodGet)
+
+	/* setup auth routes to handle */
 	router.Path("/auth/login").
 		HandlerFunc(authHandlers.login).
 		Methods(http.MethodPost)

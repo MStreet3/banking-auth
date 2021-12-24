@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mstreet3/banking-auth/dto"
+	"github.com/mstreet3/banking-auth/errs"
 	"github.com/mstreet3/banking-auth/service"
 )
 
@@ -18,14 +19,14 @@ func (h AuthHandlers) register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h AuthHandlers) verify(w http.ResponseWriter, r *http.Request) {
-
 	/* fetch URL query params */
 	vars := mux.Vars(r)
 	token := vars["token"]
 
 	/* validate the query params */
 	if token == "" {
-		writeResponse(w, http.StatusBadRequest, "invalid access token")
+		err := errs.InvalidAccessTokenError()
+		writeResponse(w, http.StatusBadRequest, err.Error())
 	}
 
 	/* attempt to parse JWT for claims */
@@ -40,7 +41,6 @@ func (h AuthHandlers) verify(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h AuthHandlers) login(w http.ResponseWriter, r *http.Request) {
-
 	/* attempt to deserialize the request */
 	var loginRequest dto.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
