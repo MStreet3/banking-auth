@@ -15,7 +15,31 @@ type AuthHandlers struct {
 }
 
 func (h AuthHandlers) register(w http.ResponseWriter, r *http.Request) {
-	writeResponse(w, http.StatusNotImplemented, "Handler not implemented..")
+	/* attempt to deserialize the request */
+	var req dto.RegisterUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		writeResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	/* validate the request */
+	/* todo: move to middleware */
+	invalid := req.Validate()
+	if invalid != nil {
+		writeResponse(w, http.StatusBadRequest, invalid.Error())
+		return
+	}
+
+	/* attempt to get access token */
+	resp, appErr := h.service.Register(req)
+	if appErr != nil {
+		writeResponse(w, appErr.Code, appErr.Error())
+		return
+	}
+
+	/* return response */
+	writeResponse(w, http.StatusOK, resp)
 }
 
 func (h AuthHandlers) verify(w http.ResponseWriter, r *http.Request) {
